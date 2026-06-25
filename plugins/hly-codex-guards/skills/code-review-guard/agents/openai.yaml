@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review Guard"
+  short_description: "Review diffs for real business risks"
+  default_prompt: "Use $code-review-guard to review only the current diff for real bugs and compatibility risks."

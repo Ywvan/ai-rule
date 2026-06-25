@@ -1,0 +1,25 @@
+{
+  "name": "hly-codex-guards",
+  "version": "0.1.0+codex.20260616121219",
+  "description": "HLY coding guardrails for requirement clarification, production implementation planning, staged execution planning, logging, Chinese comments, SQL writing, single-risk fixes, and diff-only code review.",
+  "author": {
+    "name": "hly"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "HLY Codex Guards",
+    "shortDescription": "HLY planning, logging, SQL, review, and fix guardrails",
+    "longDescription": "Personal Codex guardrails for requirement clarification, production implementation planning, staged execution planning, minimal valuable logging, restrained Chinese code comments, simple maintainable SQL, single-risk fixes, and current-diff-only code review.",
+    "developerName": "hly",
+    "category": "Productivity",
+    "capabilities": [
+      "Code Review",
+      "Code Editing"
+    ],
+    "defaultPrompt": [
+      "Use $code-review-guard to review only the current diff.",
+      "Use $single-risk-fix to fix one confirmed risk with the smallest change.",
+      "Use $requirement-scope-clarification to clarify business scope before design or coding."
+    ]
+  }
+}
