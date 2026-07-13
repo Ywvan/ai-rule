@@ -77,6 +77,8 @@ description: "Fix only one confirmed risk. Use when the user provides a risk num
 7. 不允许修改枚举定义
 8. 不允许改变已有业务语义
 9. 不允许改变历史数据处理逻辑
+10. 如果当前风险修复点涉及日志或注释，只允许在当前风险范围内按 Logging Style Guard 和 Hly Code Comment Style 补齐，不得扩大到无关代码。
+11. 不允许为了补日志或注释修改其他风险点、顺手整理周边日志、顺手补全全文件注释或修改本次风险之外的代码。
 
 ## Must Stop Conditions
 
