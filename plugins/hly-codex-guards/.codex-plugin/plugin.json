@@ -1,6 +1,6 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.1.0+codex.20260703020813",
+  "version": "0.2.0",
   "description": "HLY coding guardrails for requirement clarification, production implementation planning, staged execution planning, logging, Chinese comments, SQL writing, single-risk fixes, and diff-only code review.",
   "author": {
     "name": "hly"
