@@ -1,6 +1,6 @@
 ---
 name: logging-style-guard
-description: Use when Codex generates, modifies, or reviews Java/Spring Boot/MQ/Job/external-call logging. Enforce minimal valuable INFO/ERROR logging, prohibit DEBUG/TRACE/WARN, require business keys and full exception stack traces, prevent sensitive data leaks, and avoid meaningless logs, loop logs, getter/setter logs, DTO/VO conversion logs, DAO CRUD logs, and incidental log changes during non-log tasks.
+description: Use when Codex generates, modifies, or reviews Java/Spring Boot business code involving external calls, MQ, jobs, callbacks, async flows, compensation or retries, state transitions, payment or settlement results, business rejection, skips, fallbacks, or exception paths that can change business outcomes, as well as related logging. Enforce minimal valuable INFO/ERROR logging within the current diff, prohibit DEBUG/TRACE/WARN, require business keys and full exception stack traces, prevent sensitive data leaks, and avoid duplicate logs, high-frequency logs, meaningless logs, loop logs, getter/setter logs, DTO/VO conversion logs, DAO CRUD logs, and tool-method logs.
 ---
 
 # Codex 日志打印规范
@@ -13,113 +13,25 @@ description: Use when Codex generates, modifies, or reviews Java/Spring Boot/MQ/
 - 禁止使用 `DEBUG`、`TRACE`、`WARN`。
 - `WARN` 场景统一使用 `INFO`，并在日志文案中增加 `[WARNING]` 标识。
 
-## GPT-5.6 执行模式兼容
+## 执行模式兼容
 
-本 Skill 兼容普通、max、Pro、Ultra 和子 Agent 执行方式。
+本 Skill 兼容用户当前选择的模型、推理档位以及单 Agent、Ultra 和子 Agent 执行方式。
 
-本 Skill：
+执行方式不得改变：
 
-- 不强制指定模型；
-- 不强制指定推理强度；
-- 不强制启用 Ultra；
-- 不禁止 Ultra；
-- 不强制创建子 Agent；
-- 不禁止创建子 Agent；
-- 不固定子 Agent 数量；
-- 不覆盖用户的并发、深度或模型配置。
+- 当前 Skill 的只读或可写权限；
+- 当前任务、轮次、风险或 Review 范围；
+- 已确认业务口径；
+- 允许和禁止修改范围；
+- 验证要求和停止条件。
 
-执行模式只影响任务的推理、委派和并行方式，不得改变：
+子 Agent 发现范围外问题时只能报告，不得自行扩大任务。
+主 Agent 负责结果去重、冲突处理、最终 diff 检查和验证。
 
-1. 用户明确的任务目标；
-2. 当前 Skill 的职责；
-3. 当前任务的只读或可写状态；
-4. 当前已确认业务口径；
-5. 当前修改范围和禁止修改范围；
-6. 当前轮次、风险编号或 Review 范围；
-7. 高风险业务语义的确认要求；
-8. 当前 Skill 原有的停止条件；
-9. 当前任务的验证和输出要求。
+## 当前日志边界
 
-不得因为使用 max、Pro、Ultra 或子 Agent：
-
-- 扩大修改范围；
-- 跳过调查；
-- 跳过验证；
-- 将推荐理解视为已确认事实；
-- 绕过 Review 只读限制；
-- 自动进入下一轮；
-- 顺手处理任务范围外的问题。
-
-## 子 Agent 委派规则
-
-Codex 可以根据任务复杂度，将能够独立完成的工作委派给子 Agent。
-
-主 Agent 委派时必须明确：
-
-- 子任务目标；
-- 调查或修改范围；
-- 当前是只读还是可写；
-- 当前轮次或风险编号；
-- 已确认事实；
-- 不确定点；
-- 允许修改范围；
-- 禁止修改范围；
-- 需要返回的文件、符号、调用链或测试证据；
-- 验收条件。
-
-不得假设子 Agent 自动拥有主 Agent 的完整业务上下文和修改权限。
-
-子 Agent 发现新问题时：
-
-- 可以报告问题和证据；
-- 不得自行扩展为新的修改任务；
-- 不得修改当前子任务之外的问题。
-
-主 Agent 负责：
-
-- 汇总子 Agent 结果；
-- 处理结论冲突；
-- 去除重复结论；
-- 检查修改范围；
-- 统一业务术语；
-- 统一检查最终 diff；
-- 执行最终验证；
-- 遵守当前 Skill 的停止条件。
-
-### 当前 Skill 执行边界
-
-- 主 Agent 和子 Agent 必须继承当前任务的只读或可写状态；日志 Review 任务始终保持只读。
-- 当前任务不是日志改造时，不得因委派或并行执行扩大日志修改范围。
-
-### 并行修改规则
-
-当前任务本身允许代码修改时，可以将相互独立的实现工作委派给子 Agent。
-
-并行修改必须满足：
-
-1. 子任务职责清晰；
-2. 修改范围可以明确归属；
-3. 不得无协调地同时修改同一个文件；
-4. 不得同时修改同一段业务逻辑；
-5. 不得按不同业务口径修改同一链路；
-6. 主 Agent 必须统一检查和验证结果。
-
-以下共享内容必须指定单一修改负责人，或者由主 Agent 统一修改：
-
-- 公共接口协议；
-- 公共 DTO、VO、请求和响应结构；
-- 公共枚举；
-- 数据库表结构；
-- Liquibase；
-- 公共 SQL 片段；
-- 权限和租户隔离；
-- 金额、支付和结算口径；
-- 状态机；
-- MQ 消息结构；
-- 公共基础组件；
-- 多个模块共同依赖的配置。
-
-不强制主 Agent 唯一写入，也不禁止 Ultra 的并行实现能力。
+- 日志 Review 任务始终保持只读；
+- 日志检查和修改义务仅限当前任务、轮次或风险范围内的 diff，不得因委派或并行执行扩大范围。
 
 ## 日志最小化
 
@@ -135,7 +47,7 @@ Codex 可以根据任务复杂度，将能够独立完成的工作委派给子 A
 - 调整日志级别
 - 修改日志文案或结构
 
-日志变更视为功能变更，必须说明原因、排查价值和对应业务链路。无法说明价值的日志不要新增。
+日志变更必须能够说明原因、排查价值和对应业务链路。无法说明价值的日志不要新增。
 
 ## 必须打印日志的场景
 
@@ -238,15 +150,22 @@ Codex 可以根据任务复杂度，将能够独立完成的工作委派给子 A
 
 ## 非日志需求
 
-如果当前任务目标不是日志改造，禁止顺手做以下修改：
+当前任务即使不是日志专项改造，只要当前 diff 新增或改变了关键业务行为，也必须在当前修改范围内检查并补齐必要日志。
 
-- 修改日志级别
-- 修改日志文案
-- 新增日志
-- 删除日志
-- 调整日志结构
+允许：
 
-只有发现关键业务链路缺失必要日志，并且该缺失会影响本次任务验证或线上排查时，才允许提出补充日志；实际修改前说明原因。
+- 补充当前新增关键节点的必要日志；
+- 补充当前新增异常、拒绝、跳过、回退和状态流转的必要日志；
+- 更新因当前业务改动而失真的日志。
+
+禁止：
+
+- 修改当前任务范围之外的历史日志；
+- 全文件、全模块或全链路补日志；
+- 统一改写历史日志文案；
+- 因补日志改变业务逻辑、接口协议或 SQL 口径。
+
+补充当前 diff 的必要日志不需要新增确认步骤或执行轮次。
 
 ## Code Review 检查项
 
@@ -264,31 +183,30 @@ Review 日志相关代码时重点检查：
 ## Codex 执行要求
 
 1. 默认不修改当前任务范围之外的日志。
-2. 当前 diff 新增或改变关键业务行为时，检查当前修改范围内是否具备必要日志。
-3. 默认不修改已有日志。
-4. 默认不调整日志级别。
-5. 默认不修改日志文案。
-6. 仅在当前修改范围的关键业务链路缺失日志时允许补充。
-7. `INFO` 用于业务流程记录。
-8. `ERROR` 用于异常记录。
-9. 禁止使用 `DEBUG`。
-10. 禁止使用 `TRACE`。
-11. 禁止使用 `WARN`。
-12. `WARN` 场景统一使用 `INFO` 并增加 `[WARNING]` 标识。
-13. `ERROR` 日志必须打印完整异常堆栈。
-14. 日志必须包含业务主键。
-15. 日志不得包含敏感信息。
-16. 禁止循环日志。
-17. 禁止无意义日志。
-18. 新增日志必须说明排查价值。
-19. 无法证明价值的日志应删除。
+2. 当前 diff 新增或改变关键业务行为时，必须检查当前修改范围内是否具备必要日志。
+3. 已有日志完整覆盖时，不重复新增。
+4. 已有日志因本次改动失真时，同步更新。
+5. 日志修改严格限制在当前任务、轮次或风险范围内。
+6. `INFO` 用于业务流程记录。
+7. `ERROR` 用于异常记录。
+8. 禁止使用 `DEBUG`。
+9. 禁止使用 `TRACE`。
+10. 禁止使用 `WARN`。
+11. `WARN` 场景统一使用 `INFO` 并增加 `[WARNING]` 标识。
+12. `ERROR` 日志必须打印完整异常堆栈。
+13. 日志必须包含业务主键。
+14. 日志不得包含敏感信息。
+15. 禁止循环日志。
+16. 禁止无意义日志。
+17. 新增日志必须说明排查价值。
+18. 无法证明价值的日志应删除。
 
 ## Final Logging Check
 
 在完成代码修改或 review 前，必须检查当前 diff 是否存在以下日志问题：
 
 - 是否存在静默 return，例如 return false、return Boolean.FALSE、return;
-- 是否存在 catch 后未记录 error 日志
+- 是否存在 catch 后吞掉异常、改变业务结果或转为失败返回，但当前层以及明确的上层业务边界均没有可定位的异常日志
 - 是否存在外部调用失败、MQ、Job、回调、异步、补偿、状态流转、金额计算、权限拦截、业务跳过但没有关键日志
 - 是否新增了 log.warn、log.debug、log.trace
 - 是否使用字符串拼接日志
