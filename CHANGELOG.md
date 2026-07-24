@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.3.0-rc.1 - 2026-07-24
+
+### Added
+
+- 新增 `subagent-delegation-assessment` Skill。
+- 多服务、多仓库、多模块及存在独立工作流的任务可以独立评估 Subagent 使用。
+- 支持“现在委派”“后续阶段委派”“保持单 Agent”三种明确结论。
+- 对有明确净收益的只读调查、测试和独立工作流支持有界委派。
+
+### Compatibility
+
+- 现有 8 个 Skill 内容保持不变。
+- 不修改 Codex 配置文件。
+- 不新增自定义 Agent 配置。
+- 不固定模型、推理档位、Subagent 数量或并发数量。
+- 不要求用户切换 Ultra。
+- 不将多服务任务机械等同于必须使用 Subagent。
+- Review、单风险修复、正式分轮、SQL、日志和注释规则保持不变。
+
 ## 0.2.1-rc.1 - 2026-07-14
 
 ### Changed

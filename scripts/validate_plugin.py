@@ -21,6 +21,7 @@ EXPECTED_SKILLS = {
     "requirement-scope-clarification",
     "single-risk-fix",
     "sql-writing-style",
+    "subagent-delegation-assessment",
 }
 SEMVER_PATTERN = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
@@ -149,6 +150,37 @@ def validate_behavioral_rules(skill_texts: dict[str, str]) -> None:
     if any("不固定子 Agent 数量" in text for text in skill_texts.values()):
         fail("不应在短版兼容规则中重复固定 Agent 规则")
 
+    delegation = skill_texts["subagent-delegation-assessment"]
+    require_text(
+        delegation,
+        (
+            "现在委派",
+            "后续阶段委派",
+            "保持单 Agent",
+            "不得只输出 Agent 使用建议后停止",
+            "预期收益",
+            "协调成本",
+            "调查",
+            "可写实现",
+            "权限继承",
+            "主 Agent",
+            "不要求切换 Ultra",
+            "不预设具体 Subagent 数量",
+        ),
+        "Subagent 委派评估规则",
+    )
+    prohibited_patterns = (
+        (r"\b(?:Sol|Terra|Luna)\b", "固定具体模型"),
+        (r"(?:低|中|高|xhigh|max)推理(?:档位)?", "固定推理档位"),
+        (r"固定.{0,12}(?:Subagent|子 Agent).{0,8}数量", "固定 Subagent 数量"),
+        (r"固定.{0,12}并发数量", "固定并发数量"),
+        (r"(?<!不)要求修改\s*config\.toml", "要求修改 config.toml"),
+        (r"协议未稳定.{0,24}(?:允许|可以).{0,24}并行修改", "协议未稳定时并行修改公共协议"),
+        (r"Subagent(?:可以|能够|应当).{0,24}(?:获得|拥有).{0,20}更大的权限", "允许 Subagent 扩大原任务权限"),
+    )
+    for pattern, rule_name in prohibited_patterns:
+        if re.search(pattern, delegation, re.IGNORECASE):
+            fail(f"Subagent 委派评估规则不应包含：{rule_name}")
 
 def validate_source(root: Path) -> tuple[dict, dict[str, Path]]:
     plugin_json = root / "plugins" / PLUGIN_NAME / ".codex-plugin" / "plugin.json"

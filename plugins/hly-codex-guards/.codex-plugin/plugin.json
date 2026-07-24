@@ -1,15 +1,15 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.2.1-rc.1",
-  "description": "HLY coding guardrails for requirement clarification, production implementation planning, staged execution planning, logging, Chinese comments, SQL writing, single-risk fixes, and diff-only code review.",
+  "version": "0.3.0-rc.1",
+  "description": "HLY coding guardrails for requirement clarification, production implementation planning, staged execution planning, bounded Subagent delegation assessment, multi-service and multi-repository task decomposition, logging, Chinese comments, SQL writing, single-risk fixes, and diff-only code review.",
   "author": {
     "name": "hly"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "HLY Codex Guards",
-    "shortDescription": "HLY planning, logging, SQL, review, and fix guardrails",
-    "longDescription": "Personal Codex guardrails for requirement clarification, production implementation planning, staged execution planning, minimal valuable logging, restrained Chinese code comments, simple maintainable SQL, single-risk fixes, and current-diff-only code review.",
+    "shortDescription": "HLY planning, Subagent assessment, SQL, review, and fix guardrails",
+    "longDescription": "Personal Codex guardrails for requirement clarification, production implementation planning, staged execution planning, independent Subagent assessment, multi-service and multi-repository workflow decomposition, bounded delegation when net benefit is clear, shared-semantics ownership by the primary Agent, minimal valuable logging, restrained Chinese code comments, simple maintainable SQL, single-risk fixes, and current-diff-only code review.",
     "developerName": "hly",
     "category": "Productivity",
     "capabilities": [
@@ -19,7 +19,8 @@
     "defaultPrompt": [
       "Use $code-review-guard to review only the current diff.",
       "Use $single-risk-fix to fix one confirmed risk with the smallest change.",
-      "Use $requirement-scope-clarification to clarify business scope before design or coding."
+      "Use $requirement-scope-clarification to clarify business scope before design or coding.",
+      "Use $subagent-delegation-assessment to assess bounded Subagent delegation for multi-service, multi-repository, or independently decomposable work."
     ]
   }
 }
