@@ -1,6 +1,6 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.3.0-rc.1+codex.20260812065458",
+  "version": "0.3.0-rc.1+codex.20260812072958",
   "description": "HLY coding guardrails for requirement clarification, production implementation planning, staged execution planning, bounded Subagent delegation assessment, multi-service and multi-repository task decomposition, logging, Chinese comments, SQL writing, single-risk fixes, and diff-only code review.",
   "author": {
     "name": "hly"

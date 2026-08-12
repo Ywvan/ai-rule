@@ -1,6 +1,6 @@
 ---
 name: codex-round-execution-plan
-description: 将已确认的实现方案拆成 Codex 可执行的多轮任务，每轮只处理一个明确目标，严格限制修改范围，避免无关重构和语义破坏；也用于在已拆分任务中只执行用户指定的当前轮，完成后停止等待人工验收。
+description: 仅当用户明确调用 $codex-round-execution-plan 时使用。将已确认的实现方案拆成 Codex 可执行的多轮任务，或只执行用户指定的当前轮；不得仅因任务包含多个步骤或预计需要多轮而隐式触发。
 ---
 
 # Codex 分轮执行计划

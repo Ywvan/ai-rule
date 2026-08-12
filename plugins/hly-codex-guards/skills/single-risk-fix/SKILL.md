@@ -1,6 +1,6 @@
 ---
 name: single-risk-fix
-description: "Fix only one confirmed risk. Use when the user provides a risk number, risk description, and affected files, and asks Codex to make the smallest possible code change for that single risk. If information is missing, business meaning is uncertain, or the minimal change boundary is unclear, ask the user for clarification and wait for confirmation before editing. Do not refactor, change unrelated code, modify database structure, alter API contracts, change response structures, change enum definitions, or alter existing business semantics or historical data handling."
+description: "Use only when the user explicitly invokes $single-risk-fix. Fix one confirmed risk with the smallest possible code change. Do not activate implicitly from a risk number, risk description, affected files, or a request for a minimal fix. If information is missing, business meaning is uncertain, or the minimal change boundary is unclear, ask the user for clarification and wait for confirmation before editing. Do not refactor, change unrelated code, modify database structure, alter API contracts, change response structures, change enum definitions, or alter existing business semantics or historical data handling."
 ---
 
 # Single Risk Fix

@@ -1,6 +1,6 @@
 ---
 name: production-implementation-plan
-description: 根据已知需求生成生产可落地的后端实现方案，覆盖业务口径、影响范围、数据链路、风险、验证、上线和回滚；默认不直接写代码。
+description: 仅当用户明确调用 $production-implementation-plan 时使用。根据已知需求生成生产可落地的后端实现方案，覆盖业务口径、影响范围、数据链路、风险、验证、上线和回滚；不得仅因用户要求分析或实现需求而隐式触发，默认不直接写代码。
 ---
 
 # 生产实现方案设计

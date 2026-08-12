@@ -1,6 +1,6 @@
 ---
 name: subagent-delegation-assessment
-description: 在多服务、多仓库、多模块、跨服务调用链、大型代码调查、测试分析、Review 或存在多个独立工作流的任务中，评估是否应使用 Subagent；存在明确净收益时进行有界委派，协调成本更高时继续单 Agent。仅负责 Agent 委派评估，不替代需求澄清、技术设计、执行计划、Review、修复、SQL、日志或注释 Skill。
+description: 仅当用户明确调用 $subagent-delegation-assessment 时使用。评估多服务、多仓库、多模块、跨服务调用链、大型代码调查、测试分析、Review 或多个独立工作流是否适合使用 Subagent；不得仅因任务复杂或可拆分而隐式触发。
 ---
 
 # Subagent Delegation Assessment

@@ -1,6 +1,6 @@
 ---
 name: requirement-scope-clarification
-description: 在开始技术设计或代码修改前，先理解业务需求、拆解业务口径、识别不确定点和边界场景，防止误解需求或直接跳实现。
+description: 仅当用户明确调用 $requirement-scope-clarification 时使用。用于在开始技术设计或代码修改前理解业务需求、拆解业务口径、识别不确定点和边界场景；不得仅因用户提出新需求、缺陷或代码修改任务而隐式触发。
 ---
 
 # 需求理解与口径澄清
