@@ -5,6 +5,12 @@ description: "Use when Codex writes, modifies, or reviews SQL, MyBatis SQL, repo
 
 # SQL Writing Style
 
+## 使用声明
+
+- 执行本 Skill 的任何实质性操作前，必须先在用户可见消息中明确声明：`正在使用 $<Skill 名称>：<使用原因>`。
+- 同时使用多个 Skill 时，必须一次列出全部 Skill 及使用顺序。
+- 不得只在最终答复中事后补充声明；如果当前环境没有独立的进度消息通道，应在首条可见回复中声明。
+
 ## 核心原则
 
 SQL 的首要目标是：

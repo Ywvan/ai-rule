@@ -5,6 +5,12 @@ description: Use when Codex generates, modifies, or reviews Java/Spring Boot bus
 
 # Codex 日志打印规范
 
+## 使用声明
+
+- 执行本 Skill 的任何实质性操作前，必须先在用户可见消息中明确声明：`正在使用 $<Skill 名称>：<使用原因>`。
+- 同时使用多个 Skill 时，必须一次列出全部 Skill 及使用顺序。
+- 不得只在最终答复中事后补充声明；如果当前环境没有独立的进度消息通道，应在首条可见回复中声明。
+
 ## 核心原则
 
 - 日志用于快速定位问题、还原业务过程、支撑线上排查，并控制日志量。
