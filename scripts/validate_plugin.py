@@ -81,6 +81,16 @@ def require_text(text: str, expected: tuple[str, ...], rule_name: str) -> None:
 
 
 def validate_behavioral_rules(skill_texts: dict[str, str]) -> None:
+    usage_declaration_rules = (
+        "## 使用声明",
+        "执行本 Skill 的任何实质性操作前",
+        "必须先在用户可见消息中明确声明",
+        "同时使用多个 Skill 时，必须一次列出全部 Skill 及使用顺序",
+        "不得只在最终答复中事后补充声明",
+    )
+    for skill_name, skill_text in skill_texts.items():
+        require_text(skill_text, usage_declaration_rules, f"{skill_name} 使用声明")
+
     logging = skill_texts["logging-style-guard"]
     require_text(
         logging,
