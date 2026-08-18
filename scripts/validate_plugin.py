@@ -14,11 +14,8 @@ from pathlib import Path
 PLUGIN_NAME = "hly-codex-guards"
 EXPECTED_SKILLS = {
     "code-review-guard",
-    "codex-round-execution-plan",
     "hly-code-comment-style",
     "logging-style-guard",
-    "production-implementation-plan",
-    "requirement-scope-clarification",
     "single-risk-fix",
     "sql-writing-style",
     "subagent-delegation-assessment",
@@ -90,6 +87,14 @@ def validate_behavioral_rules(skill_texts: dict[str, str]) -> None:
     )
     for skill_name, skill_text in skill_texts.items():
         require_text(skill_text, usage_declaration_rules, f"{skill_name} 使用声明")
+        for marker in (
+            "## 执行模式兼容",
+            "当前任务、轮次",
+            "必须在当前轮完成后停止",
+            "必须实际启动有界委派",
+        ):
+            if marker in skill_text:
+                fail(f"{skill_name} 仍包含执行编排规则：{marker}")
 
     logging = skill_texts["logging-style-guard"]
     require_text(
@@ -136,29 +141,10 @@ def validate_behavioral_rules(skill_texts: dict[str, str]) -> None:
             "命名容易造成具体误解",
             "未发现明确 P0/P1/P2/P3 风险。",
             "不得为了凑数量强行输出 P3",
-            "所有子 Agent 均保持只读",
+            "Review 始终保持只读",
         ),
         "Review 灰度场景",
     )
-
-    execution = skill_texts["production-implementation-plan"]
-    require_text(
-        execution,
-        (
-            "直接连续执行",
-            "内部分阶段连续执行",
-            "正式分轮执行",
-            "暂不进入执行",
-            "不根据任务大小、Sol、Terra、Ultra 或其他模型和 Agent 配置决定",
-        ),
-        "执行方式灰度场景",
-    )
-
-    short_compatibility = "本 Skill 兼容用户当前选择的模型、推理档位以及单 Agent、Ultra 和子 Agent 执行方式。"
-    if sum(short_compatibility in text for text in skill_texts.values()) != len(EXPECTED_SKILLS):
-        fail("Ultra 和子 Agent 灰度场景未覆盖全部 Skill")
-    if any("不固定子 Agent 数量" in text for text in skill_texts.values()):
-        fail("不应在短版兼容规则中重复固定 Agent 规则")
 
     delegation = skill_texts["subagent-delegation-assessment"]
     require_text(
@@ -167,14 +153,13 @@ def validate_behavioral_rules(skill_texts: dict[str, str]) -> None:
             "现在委派",
             "后续阶段委派",
             "保持单 Agent",
-            "不得只输出 Agent 使用建议后停止",
+            "Task Decomposition 不自动触发 Subagent",
+            "结论只描述适用性，不要求实际启动 Subagent",
             "预期收益",
             "协调成本",
-            "调查",
-            "可写实现",
             "权限继承",
-            "主 Agent",
-            "不要求切换 Ultra",
+            "共享业务语义",
+            "最终语义收口",
             "不预设具体 Subagent 数量",
         ),
         "Subagent 委派评估规则",
@@ -187,6 +172,9 @@ def validate_behavioral_rules(skill_texts: dict[str, str]) -> None:
         (r"(?<!不)要求修改\s*config\.toml", "要求修改 config.toml"),
         (r"协议未稳定.{0,24}(?:允许|可以).{0,24}并行修改", "协议未稳定时并行修改公共协议"),
         (r"Subagent(?:可以|能够|应当).{0,24}(?:获得|拥有).{0,20}更大的权限", "允许 Subagent 扩大原任务权限"),
+        (r"必须实际启动.{0,16}(?:Subagent|委派)", "强制实际启动 Subagent"),
+        (r"(?:一个|每个).{0,12}(?:Task|Workstream).{0,12}(?:一个|启动).{0,8}Subagent", "Task 或 Workstream 绑定 Subagent"),
+        (r"自动启动.{0,8}Subagent", "自动启动 Subagent"),
     )
     for pattern, rule_name in prohibited_patterns:
         if re.search(pattern, delegation, re.IGNORECASE):
@@ -203,6 +191,17 @@ def validate_source(root: Path) -> tuple[dict, dict[str, Path]]:
     version = manifest.get("version")
     if not isinstance(version, str) or not SEMVER_PATTERN.fullmatch(version):
         fail(f"plugin.json 的 version 不符合 SemVer：{version!r}")
+    manifest_text = json.dumps(manifest, ensure_ascii=False)
+    for marker in (
+        "requirement-scope-clarification",
+        "production-implementation-plan",
+        "codex-round-execution-plan",
+        "requirement clarification",
+        "production implementation planning",
+        "staged execution planning",
+    ):
+        if marker in manifest_text:
+            fail(f"plugin.json 仍引用已退出的 Feature Lifecycle 能力：{marker}")
 
     entries = marketplace.get("plugins")
     if not isinstance(entries, list):

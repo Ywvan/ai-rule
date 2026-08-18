@@ -1,15 +1,15 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.3.0-rc.1+codex.20260812072958",
-  "description": "HLY coding guardrails for requirement clarification, production implementation planning, staged execution planning, bounded Subagent delegation assessment, multi-service and multi-repository task decomposition, logging, Chinese comments, SQL writing, single-risk fixes, and diff-only code review.",
+  "version": "0.3.0-rc.1+codex.20260818073421",
+  "description": "HLY cross-cutting engineering guardrails for evidence-based investigation, bounded modification scope, SQL, logging, Chinese comments, code correctness review, single-risk fixes, and Subagent usage boundaries.",
   "author": {
     "name": "hly"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "HLY Codex Guards",
-    "shortDescription": "HLY planning, Subagent assessment, SQL, review, and fix guardrails",
-    "longDescription": "Personal Codex guardrails for requirement clarification, production implementation planning, staged execution planning, independent Subagent assessment, multi-service and multi-repository workflow decomposition, bounded delegation when net benefit is clear, shared-semantics ownership by the primary Agent, minimal valuable logging, restrained Chinese code comments, simple maintainable SQL, single-risk fixes, and current-diff-only code review.",
+    "shortDescription": "Engineering guardrails for review, SQL, logging, comments, and fixes",
+    "longDescription": "Personal cross-cutting engineering guardrails for evidence-based investigation, bounded modification scope, code correctness review, simple maintainable SQL, minimal valuable logging, restrained Chinese business comments, single-risk fixes, and Subagent usage boundaries. Feature lifecycle, stage management, context handoff, and execution orchestration remain outside this plugin.",
     "developerName": "hly",
     "category": "Productivity",
     "capabilities": [
@@ -19,8 +19,7 @@
     "defaultPrompt": [
       "Use $code-review-guard to review only the current diff.",
       "Use $single-risk-fix to fix one confirmed risk with the smallest change.",
-      "Use $requirement-scope-clarification to clarify business scope before design or coding.",
-      "Use $subagent-delegation-assessment to assess bounded Subagent delegation for multi-service, multi-repository, or independently decomposable work."
+      "Use $subagent-delegation-assessment to assess whether delegation has clear net benefit and respects the original task scope."
     ]
   }
 }
