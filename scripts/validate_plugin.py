@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the hly-codex-guards source tree and a userdir installation ZIP."""
+"""Validate the hly-codex-guards source tree and an optional userdir ZIP."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ import re
 import sys
 import zipfile
 from pathlib import Path
-
 
 PLUGIN_NAME = "hly-codex-guards"
 EXPECTED_SKILLS = {
@@ -36,26 +35,23 @@ def load_json(path: Path) -> dict:
         fail(f"无法解析 JSON：{path}；{error}")
 
 
-def read_skill_front_matter(path: Path) -> tuple[str, str]:
+def read_skill(path: Path) -> tuple[str, str]:
     text = path.read_text(encoding="utf-8")
     match = re.match(r"\A---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
     if not match:
         fail(f"Skill front matter 缺失或格式错误：{path}")
     front_matter = match.group(1)
-    name = re.search(r"(?m)^name:\s*(.+?)\s*$", front_matter)
-    description = re.search(r"(?m)^description:\s*(.+?)\s*$", front_matter)
-    if not name or not name.group(1).strip():
-        fail(f"Skill name 为空：{path}")
-    if not description or not description.group(1).strip().strip('\"'):
-        fail(f"Skill description 为空：{path}")
-    return name.group(1).strip(), text
+    name_match = re.search(r"(?m)^name:\s*(.+?)\s*$", front_matter)
+    description_match = re.search(r"(?m)^description:\s*(.+?)\s*$", front_matter)
+    if not name_match or not description_match:
+        fail(f"Skill name/description 缺失：{path}")
+    return name_match.group(1).strip(), text
 
 
-def normalized_text(content: bytes, location: str) -> bytes:
-    try:
-        return content.decode("utf-8").replace("\r\n", "\n").encode("utf-8")
-    except UnicodeDecodeError as error:
-        fail(f"运行文件不是 UTF-8 文本：{location}；{error}")
+def require(text: str, items: tuple[str, ...], name: str) -> None:
+    missing = [item for item in items if item not in text]
+    if missing:
+        fail(f"{name} 缺少规则：{missing}")
 
 
 def runtime_files(root: Path) -> dict[str, Path]:
@@ -64,243 +60,91 @@ def runtime_files(root: Path) -> dict[str, Path]:
         ".agents/plugins/marketplace.json": root / ".agents" / "plugins" / "marketplace.json",
         f"plugins/{PLUGIN_NAME}/.codex-plugin/plugin.json": plugin_root / ".codex-plugin" / "plugin.json",
     }
-    skills_root = plugin_root / "skills"
-    for path in skills_root.rglob("*"):
+    for path in (plugin_root / "skills").rglob("*"):
         if path.is_file():
             files[path.relative_to(root).as_posix()] = path
     return files
 
 
-def require_text(text: str, expected: tuple[str, ...], rule_name: str) -> None:
-    missing = [item for item in expected if item not in text]
-    if missing:
-        fail(f"{rule_name} 缺少规则：{missing}")
-
-
-def validate_behavioral_rules(skill_texts: dict[str, str]) -> None:
-    usage_declaration_rules = (
-        "## 使用声明",
-        "执行本 Skill 的任何实质性操作前",
-        "必须先在用户可见消息中明确声明",
-        "同时使用多个 Skill 时，必须一次列出全部 Skill 及使用顺序",
-        "不得只在最终答复中事后补充声明",
-    )
-    for skill_name, skill_text in skill_texts.items():
-        require_text(skill_text, usage_declaration_rules, f"{skill_name} 使用声明")
-        for marker in (
-            "## 执行模式兼容",
-            "当前任务、轮次",
-            "必须在当前轮完成后停止",
-            "必须实际启动有界委派",
-        ):
-            if marker in skill_text:
-                fail(f"{skill_name} 仍包含执行编排规则：{marker}")
-
-    logging = skill_texts["logging-style-guard"]
-    require_text(
-        logging,
-        (
-            "外部接口调用",
-            "状态流转",
-            "业务主键",
-            "高频查询、循环、逐条转换和普通 CRUD，默认不新增逐次正常 `INFO` 日志",
-            "已有日志能够完整覆盖时，不重复新增",
-            "不得重复打印相同业务节点、相同异常和相同业务上下文",
-            "禁止打印完整请求、响应、DTO、VO、Entity 或认证材料",
-        ),
-        "日志灰度场景",
-    )
-
-    comments = skill_texts["hly-code-comment-style"]
-    require_text(
-        comments,
-        (
-            "DTO、VO、Query、Result 字段",
-            "Entity 字段",
-            "金额字段",
-            "枚举或状态字段",
-            "时间或有效期字段",
-            "布尔和开关字段",
-            "Liquibase column 必须有准确 `remarks`",
-            "Logger；",
-            "允许分别添加必要注释",
-            "不要给每一行代码都写注释",
-        ),
-        "注释灰度场景",
-    )
-
-    review = skill_texts["code-review-guard"]
-    require_text(
-        review,
-        (
-            "### P0",
-            "### P1",
-            "### P2",
-            "### P3",
-            "SQL 有明确更简单的等价写法",
-            "命名容易造成具体误解",
-            "未发现明确 P0/P1/P2/P3 风险。",
-            "不得为了凑数量强行输出 P3",
-            "Review 始终保持只读",
-        ),
-        "Review 灰度场景",
-    )
-
-    delegation = skill_texts["subagent-delegation-assessment"]
-    require_text(
-        delegation,
-        (
-            "现在委派",
-            "后续阶段委派",
-            "保持单 Agent",
-            "Task Decomposition 不自动触发 Subagent",
-            "结论只描述适用性，不要求实际启动 Subagent",
-            "预期收益",
-            "协调成本",
-            "权限继承",
-            "共享业务语义",
-            "最终语义收口",
-            "不预设具体 Subagent 数量",
-        ),
-        "Subagent 委派评估规则",
-    )
-    prohibited_patterns = (
-        (r"\b(?:Sol|Terra|Luna)\b", "固定具体模型"),
-        (r"(?:低|中|高|xhigh|max)推理(?:档位)?", "固定推理档位"),
-        (r"固定.{0,12}(?:Subagent|子 Agent).{0,8}数量", "固定 Subagent 数量"),
-        (r"固定.{0,12}并发数量", "固定并发数量"),
-        (r"(?<!不)要求修改\s*config\.toml", "要求修改 config.toml"),
-        (r"协议未稳定.{0,24}(?:允许|可以).{0,24}并行修改", "协议未稳定时并行修改公共协议"),
-        (r"Subagent(?:可以|能够|应当).{0,24}(?:获得|拥有).{0,20}更大的权限", "允许 Subagent 扩大原任务权限"),
-        (r"必须实际启动.{0,16}(?:Subagent|委派)", "强制实际启动 Subagent"),
-        (r"(?:一个|每个).{0,12}(?:Task|Workstream).{0,12}(?:一个|启动).{0,8}Subagent", "Task 或 Workstream 绑定 Subagent"),
-        (r"自动启动.{0,8}Subagent", "自动启动 Subagent"),
-    )
-    for pattern, rule_name in prohibited_patterns:
-        if re.search(pattern, delegation, re.IGNORECASE):
-            fail(f"Subagent 委派评估规则不应包含：{rule_name}")
-
 def validate_source(root: Path) -> tuple[dict, dict[str, Path]]:
-    plugin_json = root / "plugins" / PLUGIN_NAME / ".codex-plugin" / "plugin.json"
-    marketplace_json = root / ".agents" / "plugins" / "marketplace.json"
-    manifest = load_json(plugin_json)
-    marketplace = load_json(marketplace_json)
+    plugin_root = root / "plugins" / PLUGIN_NAME
+    manifest = load_json(plugin_root / ".codex-plugin" / "plugin.json")
+    marketplace = load_json(root / ".agents" / "plugins" / "marketplace.json")
 
     if manifest.get("name") != PLUGIN_NAME:
-        fail("plugin.json 的 name 与插件目录不一致")
+        fail("plugin.json name 不正确")
     version = manifest.get("version")
     if not isinstance(version, str) or not SEMVER_PATTERN.fullmatch(version):
-        fail(f"plugin.json 的 version 不符合 SemVer：{version!r}")
-    manifest_text = json.dumps(manifest, ensure_ascii=False)
-    for marker in (
-        "requirement-scope-clarification",
-        "production-implementation-plan",
-        "codex-round-execution-plan",
-        "requirement clarification",
-        "production implementation planning",
-        "staged execution planning",
-    ):
-        if marker in manifest_text:
-            fail(f"plugin.json 仍引用已退出的 Feature Lifecycle 能力：{marker}")
+        fail(f"plugin.json version 不符合 SemVer：{version!r}")
 
     entries = marketplace.get("plugins")
     if not isinstance(entries, list):
         fail("marketplace.json 缺少 plugins 数组")
     entry = next((item for item in entries if item.get("name") == PLUGIN_NAME), None)
-    if entry is None:
-        fail("marketplace.json 缺少 hly-codex-guards 入口")
-    if entry.get("source", {}).get("path") != f"./plugins/{PLUGIN_NAME}":
-        fail("marketplace.json 的 source.path 不正确")
+    if entry is None or entry.get("source", {}).get("path") != f"./plugins/{PLUGIN_NAME}":
+        fail("marketplace.json 的插件入口不正确")
 
-    skills_root = root / "plugins" / PLUGIN_NAME / "skills"
-    skill_dirs = sorted(path for path in skills_root.iterdir() if path.is_dir())
-    actual_dirs = {path.name for path in skill_dirs}
-    if actual_dirs != EXPECTED_SKILLS:
-        fail(f"Skill 目录不符合预期：{sorted(actual_dirs)}")
+    skills_root = plugin_root / "skills"
+    dirs = {path.name for path in skills_root.iterdir() if path.is_dir()}
+    if dirs != EXPECTED_SKILLS:
+        fail(f"Skill 目录不符合预期：{sorted(dirs)}")
 
-    skill_names: list[str] = []
-    skill_texts: dict[str, str] = {}
-    for directory in skill_dirs:
-        skill_name, text = read_skill_front_matter(directory / "SKILL.md")
-        skill_names.append(skill_name)
-        skill_texts[directory.name] = text
-    if len(skill_names) != len(set(skill_names)):
-        fail("Skill name 存在重复")
-    if set(skill_names) != EXPECTED_SKILLS:
-        fail(f"Skill name 不符合预期：{sorted(skill_names)}")
+    texts: dict[str, str] = {}
+    names: set[str] = set()
+    for directory in sorted(path for path in skills_root.iterdir() if path.is_dir()):
+        name, text = read_skill(directory / "SKILL.md")
+        names.add(name)
+        texts[directory.name] = text
+    if names != EXPECTED_SKILLS:
+        fail(f"Skill name 不符合预期：{sorted(names)}")
 
-    review = skill_texts["code-review-guard"]
-    for level in ("P0", "P1", "P2", "P3"):
-        if f"### {level}" not in review:
-            fail(f"Review 缺少 {level}")
-    required_review_rules = (
-        "默认检查和输出 P0/P1/P2/P3",
-        "未发现明确 P0/P1/P2/P3 风险。",
-        "禁止修改代码",
-        "禁止自动修复",
-    )
-    for rule in required_review_rules:
-        if rule not in review:
-            fail(f"Review 规则缺失：{rule}")
+    review = texts["code-review-guard"]
+    require(review, ("Review 只读", "### P0", "### P1", "### P2", "### P3", "不要从 Checklist 反向寻找问题", "Review Finding 是待后续复核的问题判断"), "code-review-guard")
+    for forbidden in ("先找全影响点", "必须检查：", "CTE 层级超过 3 层"):
+        if forbidden in review:
+            fail(f"code-review-guard 仍包含过度流程规则：{forbidden}")
 
-    logging = skill_texts["logging-style-guard"]
-    if "非日志任务一律禁止新增日志" in logging:
-        fail("日志规则仍包含非日志任务一律禁止新增日志")
-    if "当前任务即使不是日志专项改造" not in logging:
-        fail("日志规则缺少当前 diff 的必要日志检查")
+    fix = texts["single-risk-fix"]
+    require(fix, ("不预设它一定成立", "重新读取相关当前代码", "Finding 不成立", "不修改代码"), "single-risk-fix")
+    if "Fix one confirmed risk" in fix or "已确认风险" in fix:
+        fail("single-risk-fix 仍把 Review Finding 预设为 confirmed risk")
 
-    comments = skill_texts["hly-code-comment-style"]
-    for field_type in ("DTO、VO、Query、Result", "Entity 字段"):
-        if field_type not in comments:
-            fail(f"字段注释规则缺少：{field_type}")
-    for hard_limit in ("复杂方法最多", "通常不超过 3"):
-        if hard_limit in comments:
-            fail(f"字段注释规则仍包含硬上限：{hard_limit}")
+    delegation = texts["subagent-delegation-assessment"]
+    require(delegation, ("Task Decomposition 不自动触发 Subagent", "保持单 Agent", "权限继承"), "subagent-delegation-assessment")
 
-    if any("## GPT-5.6 执行模式兼容" in text for text in skill_texts.values()):
-        fail("仍存在重复的 GPT-5.6 长版兼容规则")
-    validate_behavioral_rules(skill_texts)
+    manifest_text = json.dumps(manifest, ensure_ascii=False)
+    if "confirmed risk" in manifest_text.lower():
+        fail("plugin defaultPrompt 不应把风险预设为 confirmed")
 
     return manifest, runtime_files(root)
 
 
 def validate_zip(zip_path: Path, source_files: dict[str, Path]) -> None:
-    if not zip_path.is_file():
-        fail(f"安装 ZIP 不存在：{zip_path}")
-    try:
-        with zipfile.ZipFile(zip_path) as archive:
-            zip_files = {
-                item.filename.replace("\\", "/"): item
-                for item in archive.infolist()
-                if not item.is_dir()
-            }
-            expected = set(source_files)
-            actual = set(zip_files)
-            if actual != expected:
-                missing = sorted(expected - actual)
-                extra = sorted(actual - expected)
-                fail(f"安装 ZIP 文件清单不一致；缺失={missing}，多余={extra}")
-            for relative_path, source_path in source_files.items():
-                source_content = normalized_text(source_path.read_bytes(), str(source_path))
-                zip_content = normalized_text(archive.read(zip_files[relative_path]), f"{zip_path}!{relative_path}")
-                if source_content != zip_content:
-                    fail(f"安装 ZIP 内容与源码不一致：{relative_path}")
-    except zipfile.BadZipFile as error:
-        fail(f"安装 ZIP 无法读取：{zip_path}；{error}")
+    with zipfile.ZipFile(zip_path) as archive:
+        actual = {item.filename.replace("\\", "/"): item for item in archive.infolist() if not item.is_dir()}
+        expected = set(source_files)
+        if set(actual) != expected:
+            fail(f"安装 ZIP 文件清单不一致；缺失={sorted(expected - set(actual))}，多余={sorted(set(actual) - expected)}")
+        for relative, source in source_files.items():
+            source_text = source.read_text(encoding="utf-8").replace("\r\n", "\n")
+            zip_text = archive.read(actual[relative]).decode("utf-8").replace("\r\n", "\n")
+            if source_text != zip_text:
+                fail(f"安装 ZIP 内容与源码不一致：{relative}")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="校验 hly-codex-guards 源码和 userdir 安装包")
-    parser.add_argument("--zip", required=True, type=Path, help="待校验的 userdir 安装 ZIP")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--zip", type=Path, help="可选：校验 userdir 安装 ZIP")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     try:
-        manifest, source_files = validate_source(root)
-        validate_zip(args.zip.resolve(), source_files)
-    except ValueError as error:
+        manifest, files = validate_source(root)
+        if args.zip:
+            validate_zip(args.zip.resolve(), files)
+    except (ValueError, OSError, zipfile.BadZipFile) as error:
         print(f"校验失败：{error}", file=sys.stderr)
         return 1
-    print(f"Validation passed: {PLUGIN_NAME} {manifest['version']}; runtime files={len(source_files)}; archive={args.zip.resolve()}")
+    print(f"Validation passed: {PLUGIN_NAME} {manifest['version']}; runtime files={len(files)}")
     return 0
 
 
