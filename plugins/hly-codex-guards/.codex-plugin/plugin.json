@@ -1,6 +1,6 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.3.1-rc.1",
+  "version": "0.3.1-rc.2",
   "description": "HLY cross-cutting engineering guardrails for focused code review, SQL, logging, Chinese comments, bounded single-risk fixes, and Subagent usage boundaries.",
   "author": {
     "name": "hly"
