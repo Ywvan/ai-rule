@@ -14,7 +14,8 @@ description: Review the requested diff or user-specified review scope for real c
 - Review 只读，不修改代码，不自动修复。
 - Finding 只针对当前 diff 或用户指定 Review Scope。
 - 为判断当前 Finding 可以读取 Scope 外相关代码、SQL、配置和调用方，但不把与本次变更无关的历史问题纳入本次 Finding。
-- 不为了凑数量输出 Finding；没有明确问题时允许直接给出无风险结论。
+- 不要从 Checklist 反向寻找问题；不为了凑数量输出 Finding。
+- 没有明确问题时允许直接给出无风险结论。
 
 ## 风险等级
 
@@ -47,7 +48,7 @@ description: Review the requested diff or user-specified review scope for real c
 - 影响；
 - 最小修复方向（能够可靠判断时）。
 
-Finding 是待后续复核的问题判断，不成为新的需求事实。
+Review Finding 是待后续复核的问题判断，不成为新的需求事实。
 
 ## SQL Finding
 
