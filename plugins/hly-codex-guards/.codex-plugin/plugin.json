@@ -1,15 +1,15 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.3.1-rc.2",
-  "description": "HLY cross-cutting engineering guardrails for focused code review, SQL, logging, Chinese comments, bounded single-risk fixes, and Subagent usage boundaries.",
+  "version": "0.3.1-rc.3",
+  "description": "HLY domain-specific engineering guardrails for review severity, SQL conventions, logging, Chinese comments, single-risk handling, and Subagent boundaries.",
   "author": {
     "name": "hly"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "HLY Codex Guards",
-    "shortDescription": "Focused engineering guardrails for review and code quality",
-    "longDescription": "Cross-cutting engineering guardrails that stay out of Feature lifecycle orchestration. They provide focused code-correctness review, SQL, logging, restrained Chinese comments, single-risk validation and fix boundaries, and optional Subagent suitability assessment while leaving investigation and execution strategy to Codex Native Harness.",
+    "shortDescription": "Domain-specific engineering guardrails",
+    "longDescription": "Provides P0-P3 review semantics, SQL-specific conventions, logging and Chinese-comment details, bounded single-risk handling, and Subagent suitability boundaries. It does not own Feature lifecycle orchestration.",
     "developerName": "hly",
     "category": "Productivity",
     "capabilities": [
@@ -17,7 +17,7 @@
       "Code Editing"
     ],
     "defaultPrompt": [
-      "Use $code-review-guard for focused, evidence-based review of the requested diff."
+      "Apply the relevant HLY specialist guardrail for the current task."
     ]
   }
 }
