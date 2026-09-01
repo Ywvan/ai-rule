@@ -48,6 +48,9 @@ description: Review the requested diff or user-specified review scope for real c
 - 影响；
 - 最小修复方向（能够可靠判断时）。
 
+- 每个 Finding 使用稳定编号 `RISK-001`、`RISK-002`……，按本次 Review 输出顺序递增。
+- 后续复核、讨论或修复同一 Finding 时沿用原编号，不因风险等级或结论变化重新编号。
+
 Review Finding 是待后续复核的问题判断，不成为新的需求事实。
 
 ## SQL Finding
