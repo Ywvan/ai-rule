@@ -1,0 +1,6 @@
+interface:
+  display_name: "Single Risk Fix"
+  short_description: "Revalidate and fix one reported risk"
+  default_prompt: "Use $single-risk-fix to revalidate and fix only the specified risk."
+policy:
+  allow_implicit_invocation: false

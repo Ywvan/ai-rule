@@ -1,0 +1,6 @@
+interface:
+  display_name: "Subagent Delegation Assessment"
+  short_description: "Assess suitability without starting delegation"
+  default_prompt: "Use $subagent-delegation-assessment to assess delegation suitability without starting the task."
+policy:
+  allow_implicit_invocation: false
