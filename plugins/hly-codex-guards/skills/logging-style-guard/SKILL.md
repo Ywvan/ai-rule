@@ -15,6 +15,7 @@ description: Use when the current change affects external API calls, MQ, Jobs/ba
 
 ## 内容与敏感信息
 
+- 默认只使用 `INFO` 和 `ERROR`，不使用 `WARN`。
 - 使用参数化占位符，不拼接日志正文；文案说明业务节点与实际结果，不写 `enter/leave method` 或 `method start`。
 - 异常保留完整异常对象/堆栈，不只记录 `getMessage()`。同一异常在明确业务边界记录后，下层不重复堆栈，除非其持有上层无法取得的关键定位信息。
 - 不直接记录 password/secret、token/accessToken/refreshToken、sign/Cookie/认证材料、完整身份证/银行卡/手机号/邮箱、完整请求体/响应体或大段 JSON；确需定位只记录脱敏且直接相关的字段。
