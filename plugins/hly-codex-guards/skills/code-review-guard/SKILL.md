@@ -21,7 +21,7 @@ description: Review the requested diff or user-specified review scope for real c
 
 - 先前方案、实现说明、代码注释和历史结论均为待验证输入，Review 不默认其正确。
 - 以用户要求或确认、修改前行为和最终 diff 为依据，检查要求的行为是否实现，以及最终 diff 是否引入用户未要求的额外可观察行为变化。
-- 最终 diff 引入的额外可观察行为变化，没有用户明确要求或确认、当前有效需求/契约或已确认缺陷作为依据，且已有证据能够确认其现实影响时，形成 Finding；依据或影响无法确认时，记录 Verification Gap。
+- 最终 diff 引入用户未要求的额外可观察行为变化，且没有用户明确要求或确认、当前有效需求/契约或已确认缺陷作为依据时：能够从当前代码、配置、数据流或调用链确认运行结果或外部可见行为发生变化，形成 Finding；无法确认是否发生上述变化时，记录 Verification Gap。
 - Verification Gap 不虚构成 Finding，也不得把对应行为表述为已验证正确或兼容。
 
 ## 风险等级
