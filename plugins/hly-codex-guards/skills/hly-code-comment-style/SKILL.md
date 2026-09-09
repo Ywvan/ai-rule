@@ -1,6 +1,6 @@
 ---
 name: hly-code-comment-style
-description: Use when Codex writes, modifies, or reviews Java, Spring Boot, MyBatis XML, SQL, or Liquibase code. This Skill owns HLY-specific Chinese comment conventions and comment placement details.
+description: Use when the current task adds, changes, or reviews business comments, public business methods, business fields/contracts, MyBatis XML comments, or Liquibase schema documentation. This Skill owns HLY-specific Chinese comment conventions and comment placement details.
 ---
 
 # HLY Code Comment Style
