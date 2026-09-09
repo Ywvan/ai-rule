@@ -5,10 +5,6 @@ description: Review the requested diff or user-specified review scope for real c
 
 # Code Review Guard
 
-## 使用声明
-
-使用本 Skill 时，简短说明正在进行 `$code-review-guard` 只读 Review。
-
 ## Review Scope
 
 - Review 只读，不修改代码，不自动修复。
@@ -19,7 +15,7 @@ description: Review the requested diff or user-specified review scope for real c
 
 ## 独立行为复核
 
-- 先前方案、实现说明、代码注释和历史结论均为待验证输入，Review 不默认其正确。
+- Review 结论基于当前 Review Baseline 重建，不继承先前方案、实现说明、代码注释或历史结论。
 - 以用户要求或确认、修改前行为和最终 diff 为依据，检查要求的行为是否实现，以及最终 diff 是否引入用户未要求的业务结果、外部交互、持久化结果、权限、状态、金额或接口可见行为变化。
 - 最终 diff 引入上述额外行为变化，且没有用户明确要求或确认、当前有效需求/契约或已确认缺陷作为依据时：能够从当前代码、配置、数据流或调用链确认变化已经发生，形成 Finding；无法确认变化是否发生时，记录 Verification Gap。
 - 只有缺少证据导致无法判断以下任一事项时，记录 Verification Gap：用户要求的行为是否实现；最终 diff 是否引入上述额外行为变化。其他与这两个判断无关的未知项不形成 Verification Gap。
