@@ -1,6 +1,6 @@
 ---
 name: logging-style-guard
-description: Use when Codex writes, modifies, or reviews Java/Spring business code whose current change needs production observability. This Skill owns logging placement, business-key selection, deduplication, loop aggregation, and sensitive-field details.
+description: Use when the current change affects external API calls, MQ, Jobs/batches, callbacks, async/retry/compensation, business-state transitions, payment/amount/settlement flows, rejection/fallback paths, or exception handling that requires production observability. This Skill owns logging placement, business-key selection, deduplication, loop aggregation, and sensitive-field details.
 ---
 
 # Logging Style Guard
