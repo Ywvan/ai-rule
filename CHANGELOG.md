@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1-rc.5 - 2026-09-11
+
+### Changed
+
+- `code-review-guard` 增加 Review Completion Gate：无风险结论必须基于与当前 diff 直接相关的关键行为路径已经闭环到结果，不能仅因尚未发现 Finding 或 Verification Gap 就提前结束 Review。
+- Verification Gap 仅新增一种会阻塞无风险结论的情况：与当前 diff 直接相关、现实可触发且一旦成立足以推翻无风险结论的关键行为路径缺少证据；其他未知项仍不扩张为 Verification Gap。
+- 保留“不从 Checklist 反向寻找问题”和“不为低相关假设无限扩散”，避免通过提高误报和保守程度换取覆盖率。
+- 校验脚本新增 Completion Gate 关键约束检查。
+
 ## 0.3.0-rc.1 - 2026-07-24
 
 ### Added
