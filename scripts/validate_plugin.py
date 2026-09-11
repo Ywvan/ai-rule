@@ -99,7 +99,22 @@ def validate_source(root: Path) -> tuple[dict, dict[str, Path]]:
         fail(f"Skill name 不符合预期：{sorted(names)}")
 
     review = texts["code-review-guard"]
-    require(review, ("Review 只读", "### P0", "### P1", "### P2", "### P3", "不要从 Checklist 反向寻找问题", "Review Finding 是待后续复核的问题判断"), "code-review-guard")
+    require(
+        review,
+        (
+            "Review 只读",
+            "### P0",
+            "### P1",
+            "### P2",
+            "### P3",
+            "不要从 Checklist 反向寻找问题",
+            "Review Finding 是待后续复核的问题判断",
+            "Review Completion Gate",
+            "不能仅因当前尚未发现 Finding",
+            "足以推翻无风险结论的关键行为路径",
+        ),
+        "code-review-guard",
+    )
     for forbidden in ("先找全影响点", "必须检查：", "CTE 层级超过 3 层"):
         if forbidden in review:
             fail(f"code-review-guard 仍包含过度流程规则：{forbidden}")
