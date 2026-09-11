@@ -11,16 +11,23 @@ description: Review the requested diff or user-specified review scope for real c
 - Finding 只针对当前 diff 或用户指定 Review Scope。
 - 为判断当前 Finding 可以读取 Scope 外相关代码、SQL、配置和调用方，但不把与本次变更无关的历史问题纳入本次 Finding。
 - 不要从 Checklist 反向寻找问题；不为了凑数量输出 Finding。
-- 没有明确 Finding 且不存在 Verification Gap 时，允许直接给出无风险结论。
+- 满足下方 Review Completion Gate，且没有明确 Finding 和 Verification Gap 时，才允许给出无风险结论。
 
 ## 独立行为复核
 
 - Review 结论基于当前 Review Baseline 重建，不继承先前方案、实现说明、代码注释或历史结论。
 - 以用户要求或确认、修改前行为和最终 diff 为依据，检查要求的行为是否实现，以及最终 diff 是否引入用户未要求的业务结果、外部交互、持久化结果、权限、状态、金额或接口可见行为变化。
 - 最终 diff 引入上述额外行为变化，且没有用户明确要求或确认、当前有效需求/契约或已确认缺陷作为依据时：能够从当前代码、配置、数据流或调用链确认变化已经发生，形成 Finding；无法确认变化是否发生时，记录 Verification Gap。
-- 只有缺少证据导致无法判断以下任一事项时，记录 Verification Gap：用户要求的行为是否实现；最终 diff 是否引入上述额外行为变化。其他与这两个判断无关的未知项不形成 Verification Gap。
+- 只有缺少证据导致无法判断以下任一事项时，记录 Verification Gap：用户要求的行为是否实现；最终 diff 是否引入上述额外行为变化；与当前 diff 直接相关、现实可触发且一旦成立足以推翻无风险结论的关键行为路径是否已被排除或证实。其他与这些判断无关的未知项不形成 Verification Gap。
 - 仅改变内部实现且上述结果均不变时，不视为额外行为变化。
 - Verification Gap 不虚构成 Finding，也不得把对应行为表述为已验证正确或兼容。
+
+## Review Completion Gate
+
+- 无风险结论必须建立在与当前 diff 直接相关的关键行为路径已经闭环到结果之上，不能仅因当前尚未发现 Finding 或 Verification Gap 就结束 Review。
+- 关键行为路径由当前 diff、真实调用链和业务语义确定，优先核验可能改变最终业务结果且具有现实触发条件的入口、关键分支、交互顺序、失败路径和结果路径；不按固定 Checklist 穷举，也不为低相关假设无限扩散。
+- 若某条与当前 diff 直接相关、现实可触发且一旦成立足以推翻无风险结论的关键行为路径尚未取得证据，继续调查；受环境或证据限制无法判断时，记录 Verification Gap。
+- 当用户要求行为、额外行为变化及上述主要反例路径均已有足够证据，且没有现实证据支持其他能够推翻当前结论的主要路径时，才允许结束 Review 并给出无风险结论。
 
 ## 风险等级
 
