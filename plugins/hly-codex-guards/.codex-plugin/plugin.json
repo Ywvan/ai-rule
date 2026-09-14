@@ -1,6 +1,6 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.3.1-rc.5",
+  "version": "0.3.1-rc.6",
   "description": "HLY domain-specific engineering guardrails for review severity, SQL conventions, logging, Chinese comments, single-risk handling, and Subagent boundaries.",
   "author": {
     "name": "hly"
@@ -9,7 +9,7 @@
   "interface": {
     "displayName": "HLY Codex Guards",
     "shortDescription": "Domain-specific engineering guardrails",
-    "longDescription": "Provides P0-P3 review semantics, SQL-specific conventions, logging and Chinese-comment details, bounded single-risk handling, and Subagent suitability boundaries. It does not own Feature lifecycle orchestration.",
+    "longDescription": "Provides evidence-based review search and completion semantics, SQL-specific conventions, logging and Chinese-comment details, bounded single-risk handling, and Subagent suitability boundaries. It does not own Feature lifecycle orchestration.",
     "developerName": "hly",
     "category": "Productivity",
     "capabilities": [
