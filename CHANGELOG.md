@@ -9,6 +9,7 @@
 - 对会改变最终业务结果的 Changed Behavior 增加主要反例检查，防止仅因模型没有主动想到替代路径就过早闭环。
 - Review Completion Gate 增加相关风险面覆盖要求；相关风险面内部应能判断为已有证据、与当前变更不适用或 Verification Gap，但不要求机械输出检查表。
 - 修正 `code-review-guard` 默认提示词中 `only current diff` 容易造成的 Diff Anchoring，明确“Finding 限定范围，分析按必要上下文扩展”。
+- `sql-writing-style` 先确认实际消费者，仅在公共逻辑、部分共用或消费者不明确时扩大调查，避免局部 SQL 为完整性无差别搜索无关调用方。
 - 校验脚本增加 Search Strategy、Analysis Scope、Changed Behavior 与主要反例规则检查。
 
 ### Compatibility
