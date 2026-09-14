@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.1-rc.6 - 2026-09-14
+
+### Changed
+
+- `code-review-guard` 明确区分 Finding Scope 与 Analysis Scope：Finding 仍只归属于当前 diff / Review Scope，但允许读取验证 Changed Behavior 所需的调用方、被调用方、SQL、配置、数据流、契约和验证证据。
+- 新增轻量 Review Search Strategy：先识别实际 Changed Behavior，再按当前变更相关的风险面调查，不恢复固定 Checklist。
+- 对会改变最终业务结果的 Changed Behavior 增加主要反例检查，防止仅因模型没有主动想到替代路径就过早闭环。
+- Review Completion Gate 增加相关风险面覆盖要求；相关风险面内部应能判断为已有证据、与当前变更不适用或 Verification Gap，但不要求机械输出检查表。
+- 修正 `code-review-guard` 默认提示词中 `only current diff` 容易造成的 Diff Anchoring，明确“Finding 限定范围，分析按必要上下文扩展”。
+- 校验脚本增加 Search Strategy、Analysis Scope、Changed Behavior 与主要反例规则检查。
+
+### Compatibility
+
+- Review 仍保持只读，不扩大 Finding Scope，不自动修复。
+- 不恢复固定 Must Check Checklist，不要求无差别遍历全部风险类型或上下游。
+- P0-P3、Finding 编号、Verification Gap 与 SQL Finding 语义保持兼容。
+
 ## 0.3.1-rc.5 - 2026-09-11
 
 ### Changed
