@@ -1,6 +1,6 @@
 {
   "name": "hly-codex-guards",
-  "version": "0.3.1-rc.7",
+  "version": "0.3.1-rc.8",
   "description": "HLY domain-specific engineering guardrails for review severity, SQL conventions, logging, Chinese comments, single-risk handling, and Subagent boundaries.",
   "author": {
     "name": "hly"
