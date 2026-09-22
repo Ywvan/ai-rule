@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.1-rc.9 - 2026-09-22
+
+### Changed
+
+- `code-review-guard` 增加现实可达性与现有保护门禁：代码风险形态本身不直接形成 Finding；会改变结论的触发链、guard、状态约束、事务 / 锁、幂等及上下游保护需要核验，证据不足时进入 Verification Gap。
+- 当 `gitnexus-review` 当前可用且 Review 涉及可观察行为、共享契约、跨模块 / 跨服务调用、影响范围或合并风险时，将其作为 Structural Evidence Specialist 主动参与；`code-review-guard` 继续拥有 Finding Scope、P0-P3、证据 / 完成门禁与最终输出。
+- GitNexus 的 caller、dependent、affected process 等图谱关系只作为调查线索，具体实现事实仍回到当前源码核验；逐 symbol 全量 impact、全量 direct dependent、expert lens / swarm / critic、PDG / taint 仅在证据需要或用户明确要求深度结构 / 安全 Review 时执行，不自动触发 Subagent。
+- 更新 `validate_plugin.py` 的 Review 不变量校验，移除已失效的旧版固定文本要求，改为校验当前 evidence gate、reachability、Structural Evidence 和 Subagent 边界。
+
+### Compatibility
+
+- Review 仍保持只读，不扩大 Finding Scope，不自动修复。
+- 不恢复固定 Checklist 或无差别全量图谱遍历；SQL、日志、注释、single-risk 与 Subagent Specialist 的既有职责不变。
+- `gitnexus-review` 不可用时，继续按 `code-review-guard` 与当前可用代码导航工具完成 Review。
+
 ## 0.3.1-rc.6 - 2026-09-14
 
 ### Changed
