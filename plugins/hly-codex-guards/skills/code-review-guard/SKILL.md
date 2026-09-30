@@ -20,7 +20,9 @@ description: Review the requested diff or user-specified review scope for real c
 
 当前 diff、调用链、配置、契约或验证结果已经暴露，且不同取值会改变 Finding 或“无风险”结论的事实，必须验证或记录 Verification Gap；未由当前证据暴露的纯理论可能性不主动枚举。已处理上述事实且不存在未解释的冲突证据时结束分析，不为完整性扩展到与当前变更无关的路径。
 
-形成 Finding 前，除确认当前变更存在风险形态外，还要核验现实可达的触发链，以及当前证据已经暴露的 guard、校验、状态约束、事务 / 锁、幂等、上游或下游保护是否已阻断错误结果。只有代码缺口但无法确认错误结果可达时，不定性为 Finding；若该可达性会改变当前结论且证据仍不足，记录 Verification Gap。
+形成 Finding 前，除确认当前变更存在风险形态外，还要核验现实可达的触发链，以及当前证据已经暴露的 guard、校验、状态约束、事务 / 锁、幂等、上游或下游保护是否已阻断错误结果。若当前证据表明存在其他现实可达的业务路径、回调、重试或补偿，且其可能完成同一业务结果、阻断错误结果或改变实际影响范围，也必须纳入当前 Finding 的判断。只有代码缺口但无法确认错误结果可达时，不定性为 Finding；若该可达性会改变当前结论且证据仍不足，记录 Verification Gap。
+
+后续新证据若推翻 Candidate Finding 的关键前提、表明错误结果不可达、存在替代完成路径或实际影响范围更小，必须重新评估该 Finding。不得仅在其他 Finding、备注或说明中承认冲突证据，同时继续沿用原严重级别、影响范围或确定性结论；证据不足以重新定性时，降为 Verification Gap。
 
 ## Structural Evidence
 
@@ -33,6 +35,8 @@ description: Review the requested diff or user-specified review scope for real c
 ## Review Completion Gate
 
 只有同时满足以下条件，才给出无风险结论：当前 diff 的可观察行为变化已定位到实际影响路径；上述会改变结论的已暴露事实均已验证；不存在未解释的冲突证据；不存在阻塞判断的 Verification Gap。Review 不因“暂时没发现问题”自动通过，也不要求为完整性穷尽与当前变更无关的路径。
+
+输出 P0-P3 Finding 时同样不得存在会实质改变该 Finding 的未解释冲突证据或未验证关键前提；否则应继续核验或记录 Verification Gap。
 
 ## 风险等级
 

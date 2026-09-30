@@ -119,6 +119,10 @@ def validate_source(root: Path) -> tuple[dict, dict[str, Path]]:
             "不直接构成 Finding",
             "仅在当前风险判断确实依赖对应证据",
             "不因此自动触发 Subagent",
+            "其他现实可达的业务路径、回调、重试或补偿",
+            "必须重新评估该 Finding",
+            "不得仅在其他 Finding、备注或说明中承认冲突证据",
+            "输出 P0-P3 Finding 时同样不得存在",
         ),
         "code-review-guard",
     )

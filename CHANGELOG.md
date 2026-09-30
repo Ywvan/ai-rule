@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.1-rc.10 - 2026-09-30
+
+### Changed
+
+- `code-review-guard` 在 Finding 定性前纳入当前证据已暴露的其他现实业务路径、回调、重试或补偿，避免把局部路径缺口外推为整个业务结果失败。
+- 后续新证据若推翻关键前提、显示替代完成路径或缩小实际影响范围，必须重新评估 Candidate Finding；证据不足时降为 Verification Gap。
+- Review Completion Gate 同步约束 P0-P3 Finding：存在会实质改变结论的未解释冲突证据或未验证关键前提时，不得直接定级。
+- `validate_plugin.py` 增加上述规则的不变量校验。
+
+### Compatibility
+
+- Review 仍保持只读，不扩大 Finding Scope，不引入固定 Checklist 或全量路径遍历。
+- P0-P3、Verification Gap、Structural Evidence、SQL Finding、single-risk 与 Subagent 既有语义保持兼容。
+
 ## 0.3.1-rc.9 - 2026-09-22
 
 ### Changed
