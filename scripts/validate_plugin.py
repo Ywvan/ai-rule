@@ -15,8 +15,7 @@ EXPECTED_SKILLS = {
     "code-review-guard",
     "hly-code-comment-style",
     "logging-style-guard",
-    "single-risk-fix",
-    "sql-writing-style",
+    "sql-quality",
     "subagent-delegation-assessment",
 }
 SEMVER_PATTERN = re.compile(
@@ -129,11 +128,6 @@ def validate_source(root: Path) -> tuple[dict, dict[str, Path]]:
     for forbidden in ("先找全影响点", "必须检查：", "CTE 层级超过 3 层"):
         if forbidden in review:
             fail(f"code-review-guard 仍包含过度流程规则：{forbidden}")
-
-    fix = texts["single-risk-fix"]
-    require(fix, ("不预设它一定成立", "重新读取相关当前代码", "Finding 不成立", "不修改代码"), "single-risk-fix")
-    if "Fix one confirmed risk" in fix or "已确认风险" in fix:
-        fail("single-risk-fix 仍把 Review Finding 预设为 confirmed risk")
 
     delegation = texts["subagent-delegation-assessment"]
     require(delegation, ("Task Decomposition 不自动触发 Subagent", "保持单 Agent", "权限继承"), "subagent-delegation-assessment")

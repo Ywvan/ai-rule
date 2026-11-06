@@ -1,9 +1,9 @@
 ---
-name: sql-writing-style
-description: Use when Codex writes, modifies, or reviews SQL, MyBatis SQL, report SQL, or database query logic. This Skill owns SQL-specific impact analysis and team SQL style conventions.
+name: sql-quality
+description: Use when creating, changing, analyzing, or reviewing SQL and its database query call sites, including MyBatis, reports, and batch queries. Focus on result correctness, data and permission boundaries, query execution cost, and SQL maintainability.
 ---
 
-# SQL Writing Style
+# SQL Quality
 
 ## 影响范围与结果语义
 
@@ -23,11 +23,13 @@ description: Use when Codex writes, modifies, or reviews SQL, MyBatis SQL, repor
 
 写入或 Review 可能进入生产执行的 SQL 时，同时考虑数据量/选择性、索引与列类型、调用频率和执行范围。信息不足时，不仅凭 SQL 文本断言“走索引”“不会全表扫描”或“可直接生产执行”，也不机械要求所有 SQL 执行 `EXPLAIN`；性能结论会影响方案时再核对 schema、索引、执行计划或实际数据规模，无法验证则说明。
 
+SQL 质量还包括当前变更涉及的单次请求或批次内的累计数据库读取成本：同一批业务数据的重复查询、已有查询结果未复用，以及查询次数随处理记录数增长等。相同表名或 SQL 条数增加本身不构成重复读取问题；需区分查询的数据范围和业务用途。复用已有结果不得改变查询时点、权限、事务边界或业务结果。源码可确认重复读取但缺少数据规模或频率证据时，分别说明已确认的重复操作与未验证的性能影响；不因理论性能问题扩展调查或要求重写。
+
 - 过滤/JOIN 条件优先保持可利用既有索引的形式；列函数、`CAST` / 隐式类型转换、前导模糊匹配、跨类型比较等先结合索引、列类型和数据库能力判断，存在等价可索引写法时优先采用。形式本身不直接构成性能 Finding。
 - JOIN、聚合、排序、窗口、子查询和深分页关注基数放大、中间结果、重复计算和返回量；小数据/低频场景不为理论性能重写，只有现实规模、调用频率或执行计划依据时才定性性能风险。
 - `UPDATE` / `DELETE` / 回填 / 批处理确认过滤边界和预计影响范围；范围大或未知时考虑索引、锁、事务时长及是否分批、限速或可恢复。范围不足时不表述为可无条件直接生产执行。
 
-## 写法约定
+## 表达与可维护性
 
 - 优先直接表达业务关系，不机械拆成多层 CTE 或子查询；简单、正确的 SQL 不为形式重写。
 - CTE 用于明确业务步骤、消除重复逻辑或改善嵌套查询可读性；单次使用且没有可读性收益、多层嵌套 CTE 或机械拆分默认不采用。
