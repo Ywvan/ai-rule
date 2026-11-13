@@ -1,9 +1,20 @@
 ---
 name: sql-quality
-description: Use when creating, changing, analyzing, or reviewing SQL and its database query call sites, including MyBatis, reports, and batch queries. Focus on result correctness, data and permission boundaries, query execution cost, and SQL maintainability.
+description: Use when creating, changing, analyzing, or reviewing SQL, DDL/Liquibase migrations, and database query call sites, including MyBatis, reports, and batch queries. Focus on result correctness, data and permission boundaries, query execution cost, and SQL maintainability.
 ---
 
 # SQL Quality
+
+## DDL 与数据库方言
+
+- 新建表和新增列默认继承目标库或表的字符集、排序规则及数据库默认存储引擎。避免在 DDL 中写死列级 `CHARACTER SET`、`COLLATE` 或表尾的 `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`。确有业务或存储要求时，说明依赖并限定适用数据库。
+- 修改既有 DDL 时，核对继承默认值后对唯一键判重（如大小写）、排序及索引最大字节数的影响，同时检查依赖原子句的 Liquibase `modifySql`。包含方言专属语法的 changeset 要通过 `dbms` 限定执行范围，并核对其他受支持数据库的新建表与旧表升级入口。
+
+## 长字符串索引与唯一约束
+
+- 给长字符串（如 `varchar(512)`）建全列索引前，说明它支持哪条实际查询或哪项业务唯一性要求。新增或重建唯一键时，核对一行代表的业务对象、租户范围，以及写入和重算生成稳定 ID 的规则。已有唯一键时，只有能举出旧键允许、业务必须拦住的重复记录，才新增第二条唯一约束。
+- 对主键、唯一索引和普通索引，按声明长度、实际字符集和索引前缀分别核算单列与组合键的最大字节数，并对照目标数据库版本和配置。以 MySQL 为例，完整索引 utf8mb4 的 `varchar(512)` 单列可达 2048 字节，还需核对 InnoDB 页大小、行格式和对应版本的限制。不要用样例数据的实际长度判断建表能否成功。
+- 改用前缀唯一索引前，检查同一组合键中其他列相同、字符串前缀相同但完整值不同的合法记录是否会被误判为重复。增删索引时同步核对新建表、旧表升级及后续重建索引的语句。
 
 ## 影响范围与结果语义
 
