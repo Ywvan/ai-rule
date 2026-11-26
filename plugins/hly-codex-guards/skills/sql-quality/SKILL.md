@@ -9,6 +9,7 @@ description: Use when creating, changing, analyzing, or reviewing SQL, DDL/Liqui
 
 - 新建表和新增列默认继承目标库或表的字符集、排序规则及数据库默认存储引擎。避免在 DDL 中写死列级 `CHARACTER SET`、`COLLATE` 或表尾的 `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin`。确有业务或存储要求时，说明依赖并限定适用数据库。
 - 修改既有 DDL 时，核对继承默认值后对唯一键判重（如大小写）、排序及索引最大字节数的影响，同时检查依赖原子句的 Liquibase `modifySql`。包含方言专属语法的 changeset 要通过 `dbms` 限定执行范围，并核对其他受支持数据库的新建表与旧表升级入口。
+- 新增 Liquibase changeSet 时，核对同模块、同作者、同迁移批次已提交的写法，沿用仓库的 `id` 编号和 `author` 命名约定。Liquibase 用 `id`、`author` 和变更日志路径（配置 `logicalFilePath` 时使用逻辑路径）识别 changeSet。修改已有条目的这些标识前，先核对目标环境的 `DATABASECHANGELOG`。已执行的条目保留原标识，结构修正通过新的 changeSet 完成。
 
 ## 长字符串索引与唯一约束
 
