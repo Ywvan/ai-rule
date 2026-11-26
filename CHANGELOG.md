@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1-rc.13 - 2026-11-26
+
+### Changed
+
+- `sql-quality` 补充 Liquibase changeSet 标识规则。新增条目沿用同模块、同作者、同迁移批次的编号和作者写法。变更已有条目的编号、作者或路径前核对 `DATABASECHANGELOG`，已执行条目通过新增 changeSet 修正结构。
+
 ## 0.3.1-rc.12 - 2026-11-18
 
 ### Changed
